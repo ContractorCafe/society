@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  society.contractor.cafe:
+    image: society.contractor.cafe
+    build:
+      context: ./society.contractor.cafe
+      dockerfile: Dockerfile
