@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace society.contractor.cafe
 {
@@ -21,7 +23,29 @@ namespace society.contractor.cafe
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(
+                options => options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
+
             services.AddMvc();
+
+            services.AddOptions();
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                })
+            .AddCookie()
+            .AddOpenIdConnect(options =>
+                {
+                    options.Authority = $"https://{Configuration["Auth0:Domain"]}";
+                    options.ClientId = Configuration["Auth0:ClientId"];
+                    options.ClientSecret = Configuration["Auth0:ClientSecret"];
+                    options.ResponseType = "code";
+                    options.CallbackPath = new Microsoft.AspNetCore.Http.PathString("/signin-auth0");
+                    options.ClaimsIssuer = "Auth0";
+
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,6 +60,8 @@ namespace society.contractor.cafe
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.UseAuthentication();
 
             app.UseStaticFiles();
 
