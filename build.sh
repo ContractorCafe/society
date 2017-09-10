@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 dotnet restore **/*.csproj
-dotnet test **/*.csproj
-dotnet build society.contractorcafe.cafe/society.contractorcafe.cafe.csproj
+dotnet test society.contractor.cafe.tests/society.contractor.cafe.tests.csproj
+dotnet build society.contractor.cafe/society.contractor.cafe.csproj
